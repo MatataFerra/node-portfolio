@@ -10,18 +10,16 @@ const signup = async (req, res = response) => {
 
   const { username, email, password, admin, is_admin } = req.body;
 
-  console.log({ username, email, password, admin, is_admin });
-
   try {
 
     const usuario = await User.findOne({ email });
     const emailChecked = checkRegExp(email);
-    
-    if ( usuario ) {
+
+    if (admin !== process.env.ADMIN){
       return res.status(400).json({
+        message: 'No tiene permisos para crear un usario, contactese con el administrador',
+        data: null,
         ok: false,
-        message: 'Un usuario existe con ese correo',
-        data: null
       })
     }
 
@@ -32,13 +30,12 @@ const signup = async (req, res = response) => {
         data: null
       })
     }
-
-
-    if (admin !== process.env.ADMIN){
+    
+    if ( usuario ) {
       return res.status(400).json({
-        message: 'No tiene permisos para crear un usario, contactese con el administrador',
-        data: null,
         ok: false,
+        message: 'Un usuario existe con ese correo',
+        data: null
       })
     }
 
@@ -57,7 +54,7 @@ const signup = async (req, res = response) => {
     await newUser.save()
     await mongoose.connection.close()
 
-    res.status(201).json({
+    return res.status(201).json({
       message: 'User created',
       ok: true,
       data: {newUser, token}
@@ -65,7 +62,7 @@ const signup = async (req, res = response) => {
     
   } catch (error) {
     console.log(error);
-    res.status(500).json({
+    return res.status(500).json({
       ok: false,
       message: 'Se produjo un error a la hora de crear el usuario',
       data: null
@@ -77,12 +74,13 @@ const signup = async (req, res = response) => {
 const login = async (req, res) => {
   const { email, password } = req.body
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email });
 
     if ( !user ) {
       return res.status(400).json({
         ok: false,
-        Message: 'Usuario/contraseña incorrectos' //No es recomendable dar el error eacto
+        message: 'Usuario/contraseña incorrectos', //No es recomendable dar el error eacto
+        data: null
       })
     }
 
@@ -91,7 +89,8 @@ const login = async (req, res) => {
     if ( !validPassword ) {
       return res.status(400).json({
         ok: false,
-        Message: 'Contraseña inválida' //No es recomendable dar el error eacto
+        message: 'Contraseña inválida', //No es recomendable dar el error eacto
+        data: null
       })
     }
 
