@@ -4,15 +4,25 @@ const Comment = require('../models/Comments');
 const { checkRegExp } = require('../../../../helpers/regex');
 
 const getComments = async (req, res = response) => {
-  const comments = await Comment.find();
+  try {
+    const comments = await Comment.find();
 
-  return res.status(200).json({
-    message: 'List of comments',
-    ok: true,
-    data: comments.map(comment => {
-      return {comment: comment, date: comment.date.toLocaleString('es-AR', {day: '2-digit', month: '2-digit', year: '2-digit'})}
+    return res.status(200).json({
+      message: 'List of comments',
+      ok: true,
+      data: comments.map(comment => {
+        return {comment: comment, date: comment.date.toLocaleString('es-AR', {day: '2-digit', month: '2-digit', year: '2-digit'})}
+      })
     })
-  })
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      message: 'Hubo un error a la hora de hacer la petición',
+      ok: false,
+      data: null
+    })
+  }
+  
 }
 
 const createComment = async (req, res = response) => {
