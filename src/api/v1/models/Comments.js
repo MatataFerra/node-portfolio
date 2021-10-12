@@ -2,17 +2,17 @@ const { Schema, model } = require('mongoose');
 
 
 const CommentsSchema = new Schema({
-  name: {
+  client_name: {
     type: String
   },
-  email: {
+  client_email: {
     type: String,
     required: true
   },
-  phone: {
+  client_phone: {
     type: String
   },
-  text: {
+  client_comment: {
     type: String
   },
   date: {
