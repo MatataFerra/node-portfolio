@@ -12,7 +12,6 @@ const signup = async (req, res = response) => {
 
   try {
 
-    const usuario = await User.findOne({ email });
     const emailChecked = checkRegExp(email);
 
     if (admin !== process.env.ADMIN){
@@ -30,6 +29,8 @@ const signup = async (req, res = response) => {
         data: null
       })
     }
+
+    const usuario = await User.findOne({ email });
     
     if ( usuario ) {
       return res.status(400).json({
@@ -75,21 +76,28 @@ const login = async (req, res) => {
   const { email, password } = req.body
   try {
     const user = await User.findOne({ email: email });
-
-    if ( !user ) {
-      return res.status(400).json({
-        ok: false,
-        message: 'Usuario/contraseña incorrectos', //No es recomendable dar el error eacto
-        data: null
-      })
-    }
-
     const validPassword = brycpt.compareSync( password, user.password )
 
     if ( !validPassword ) {
       return res.status(400).json({
         ok: false,
-        message: 'Contraseña inválida', //No es recomendable dar el error eacto
+        message: 'Usuario/contraseña incorrectos', //No es recomendable dar el error exacto
+        data: null
+      })
+    }
+
+    if ( !user ) {
+      return res.status(400).json({
+        ok: false,
+        message: 'Usuario/contraseña incorrectos', //No es recomendable dar el error exacto
+        data: null
+      })
+    }
+
+    if(!user.is_admin) {
+      return res.status(400).json({
+        ok: false,
+        message: 'No posee permisos de administrador',
         data: null
       })
     }

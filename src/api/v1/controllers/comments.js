@@ -9,15 +9,17 @@ const getComments = async (req, res = response) => {
   return res.status(200).json({
     message: 'List of comments',
     ok: true,
-    data: comments
+    data: comments.map(comment => {
+      return {comment: comment, date: comment.date.toLocaleString('es-AR', {day: '2-digit', month: '2-digit', year: '2-digit'})}
+    })
   })
 }
 
 const createComment = async (req, res = response) => {
 
-  const { name, email, phone, text } = req.body;
+  const { client_name, client_email, client_phone, client_comment } = req.body;
 
-  const checkEmail = checkRegExp(email);
+  const checkEmail = checkRegExp(client_email);
 
   if(!checkEmail) {
     return res.status(400).json({
@@ -29,11 +31,10 @@ const createComment = async (req, res = response) => {
 
   try {
     const newComment = new Comment({
-      name,
-      email,
-      phone,
-      text,
-      date: Date.now().toLocaleString('es-AR', {day: '2-digit', month: '2-digit', year: '2-digit'})
+      client_name,
+      client_email,
+      client_phone,
+      client_comment
     });
   
     await newComment.save();
