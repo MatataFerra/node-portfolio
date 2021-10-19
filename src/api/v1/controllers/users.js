@@ -13,7 +13,7 @@ const signup = async (req, res = response) => {
   try {
 
     const emailChecked = checkRegExp(email);
-
+    
     if (admin !== process.env.ADMIN){
       return res.status(400).json({
         message: 'No tiene permisos para crear un usario, contactese con el administrador',
@@ -53,7 +53,6 @@ const signup = async (req, res = response) => {
     const token = await generateJwt(newUser._id, newUser.username);
 
     await newUser.save()
-    await mongoose.connection.close()
 
     return res.status(201).json({
       message: 'User created',

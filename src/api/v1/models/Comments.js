@@ -9,9 +9,6 @@ const CommentsSchema = new Schema({
     type: String,
     required: true
   },
-  client_phone: {
-    type: String
-  },
   client_comment: {
     type: String
   },
